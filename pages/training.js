@@ -1,30 +1,34 @@
-import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import '@mediapipe/pose';
-import '@mediapipe/camera_utils'
-import '@mediapipe/drawing_utils'
-import { ControlPanel, FPS, Slider, StaticText, Toggle } from '@mediapipe/control_utils';
-import { Pose } from '@mediapipe/pose';
-import { Camera } from '@mediapipe/camera_utils';
-import * as poseDetection from '@tensorflow-models/pose-detection'
+import React from "react"
+import { hydrate, render } from "react-dom"
+// import BrowserRouter from "./routers/Browser"
+
+// import '@mediapipe/pose';
+// import '@mediapipe/camera_utils'
+// import '@mediapipe/drawing_utils'
+// import { ControlPanel, FPS, Slider, StaticText, Toggle } from '@mediapipe/control_utils';
+// import { Pose } from '@mediapipe/pose';
+// import { Camera } from '@mediapipe/camera_utils';
+// import '@mediapipe/pose';
+// import * as poseDetection from '@tensorflow-models/pose-detection';
 
 export default function Training() {
     if (process.browser) {
-        const detector = poseDetection.createDetector(poseDetection.SupportedModels.BlazePose, {runtime: 'mediapipe'});
+        // const detector = poseDetection.createDetector(poseDetection.SupportedModels.BlazePose, {runtime: 'mediapipe'});
 
-        const video5 = document.getElementsByClassName('input_video5')[0];
-        const out5 = document.getElementsByClassName('output5')[0];
-        const controlsElement5 = document.getElementsByClassName('control5')[0];
+        const video5 = document.getElementById('input_video5');
+        const out5 = document.getElementById('output5')
+        const controlsElement5 = document.getElementById('control5');
         const canvasCtx5 = out5.getContext('2d');
-        const pose = detector.estimatePoses(video5)
+        // const pose = detector.estimatePoses(video5)
         
+        console.log(video5);
         const fpsControl = new FPS();
         
         
         var count = 0;
-        var BEND = false;
-        var STRETCH = false;
+        // var BEND = false;
+        // var STRETCH = false;
         var prev = new Date();
         
         const spinner = document.querySelector('.loading');
@@ -43,16 +47,14 @@ export default function Training() {
         }
         
         function calc_angle(p1,p2,p3){
-          
-          // console.log(p1[0]);
-          var angle = rad_to_deg(Math.atan2(p3.y-p2.y, p3.x-p2.x) - Math.atan2(p1.y-p2.y, p1.x-p2.x));
+          var angle = Math.abs(rad_to_deg(Math.atan2(p3.y-p2.y, p3.x-p2.x) - Math.atan2(p1.y-p2.y, p1.x-p2.x)));
           return Math.round(angle)
         }
         
         function onResultsPose(results) {
           document.body.classList.add('loaded');
           fpsControl.tick();
-          var mode = 'squat';
+          var mode = 'pushups';
         
           switch (mode){
             case 'squat':
@@ -60,12 +62,14 @@ export default function Training() {
               var idx2 = 26
               var idx3 = 28
               var thresh = 60
+              var interval = 0.3
               break
             case 'pushups':
               var idx1 = 12
               var idx2 = 14
               var idx3 = 16
               var thresh = 45
+              var interval = 0.3
               break
         
             case 'situps':
@@ -73,6 +77,7 @@ export default function Training() {
               var idx2 = 24
               var idx3 = 26
               var thresh = 130
+              var interval = 0.3
               break
         
             case 'backexts':
@@ -80,23 +85,23 @@ export default function Training() {
               var idx2 = 24
               var idx3 = 12
               var thresh = -190
+              var interval = 0.3
               break        
           }
-        
-          var angle = calc_angle(p1=results.poseLandmarks[idx1], 
-                                p2=results.poseLandmarks[idx2],
-                                p3=results.poseLandmarks[idx3])
-          console.log(angle);
+          
+          // console.log(mode, idx1, idx2, idx3, thresh, results.poseLandmarks[0]);
+          var angle = calc_angle(results.poseLandmarks[idx1],results.poseLandmarks[idx2],results.poseLandmarks[idx3]);
+          // console.log(angle);
           var now = new Date();
           now = now.getTime();
           var dt = (now/1000).toFixed(2) - (prev/1000).toFixed(2);
-          console.log(dt);
+          // console.log(dt);
           // setInterval(log(now.getTime()), 1000);
         
           if(angle < thresh){
             console.log('BEND!');
-            if(dt > 0.2){
-              console.log('++');
+            if(dt > interval){
+              // console.log('++');
               count += 1
               prev = new Date();
               prev = prev.getTime();
@@ -106,7 +111,9 @@ export default function Training() {
             prev = new Date();
             prev = prev.getTime();
           }
-        
+          
+          console.log(mode, angle, count);
+
           canvasCtx5.save();
           canvasCtx5.clearRect(0, 0, out5.width, out5.height);
           canvasCtx5.drawImage(
@@ -166,62 +173,65 @@ export default function Training() {
           canvasCtx5.restore();
         }
         
-        // const pose = new Pose({locateFile: (file) => {
-        //   return `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.2/${file}`;
-        // }});
-        // pose.onResults(onResultsPose);
+        const pose = new Pose({locateFile: (file) => {
+          // console.log('a')
+          // console.log(typeof file)
+          // console.log(file)
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.2/${file}`;
+        },});
+        pose.onResults(onResultsPose);
         
-        // const camera = new Camera(video5, {
-        //   onFrame: async () => {
-        //     await pose.send({image: video5});
-        //   },
-        //   width: 480,
-        //   height: 480
-        // });
-        // camera.start();
+        const camera = new Camera(video5, {
+          onFrame: async () => {
+            await pose.send({image: video5});
+          },
+          width: 480,
+          height: 480
+        });
+        camera.start();
         
-        // new ControlPanel(controlsElement5, {
-            //   selfieMode: true,
-            //   upperBodyOnly: false,
-            //   smoothLandmarks: true,
-            //   minDetectionConfidence: 0.5,
-            //   minTrackingConfidence: 0.5
-            // })
-            // .add([
-            //   new StaticText({title: 'MediaPipe Pose'}),
-            //   fpsControl,
-            //   new Toggle({title: 'Selfie Mode', field: 'selfieMode'}),
-            //   new Toggle({title: 'Upper-body Only', field: 'upperBodyOnly'}),
-            //   new Toggle({title: 'Smooth Landmarks', field: 'smoothLandmarks'}),
-            //   new Slider({
-            //     title: 'Min Detection Confidence',
-            //     field: 'minDetectionConfidence',
-            //     range: [0, 1],
-            //     step: 0.01
-            //   }),
-            //   new Slider({
-            //     title: 'Min Tracking Confidence',
-            //     field: 'minTrackingConfidence',
-            //     range: [0, 1],
-            //     step: 0.01
-            //   }),
-            // ])
-            // .on(options => {
-            //   video5.classList.toggle('selfie', options.selfieMode);
-            //   pose.setOptions(options);
-            // });
+        new ControlPanel(controlsElement5, {
+              selfieMode: true,
+              upperBodyOnly: false,
+              smoothLandmarks: true,
+              minDetectionConfidence: 0.5,
+              minTrackingConfidence: 0.5
+            })
+            .add([
+              new StaticText({title: 'MediaPipe Pose'}),
+              fpsControl,
+              new Toggle({title: 'Selfie Mode', field: 'selfieMode'}),
+              new Toggle({title: 'Upper-body Only', field: 'upperBodyOnly'}),
+              new Toggle({title: 'Smooth Landmarks', field: 'smoothLandmarks'}),
+              new Slider({
+                title: 'Min Detection Confidence',
+                field: 'minDetectionConfidence',
+                range: [0, 1],
+                step: 0.01
+              }),
+              new Slider({
+                title: 'Min Tracking Confidence',
+                field: 'minTrackingConfidence',
+                range: [0, 1],
+                step: 0.01
+              }),
+            ])
+            .on(options => {
+              video5.classList.toggle('selfie', options.selfieMode);
+              pose.setOptions(options);
+            });
     }
   return (
     <div className={styles.container}>
-      <Head>
+      <head>
         <title>筋肉</title>
-        <meta charset="utf-8"/>
+        <meta charSet="utf-8"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css"/>
-        {/* <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossOrigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossOrigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossOrigin="anonymous"></script> */}
-        {/* <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossOrigin="anonymous"></script> */}
-      </Head>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.1/camera_utils.js" crossOrigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.1/control_utils.js" crossOrigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.2/drawing_utils.js" crossOrigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.2/pose.js" crossOrigin="anonymous"></script>
+      </head>
     
         <main>
 
@@ -240,7 +250,7 @@ export default function Training() {
                     Webcam Input
                     </p>
                     <div className="panel-block">
-                    <video className="input_video5"></video>
+                      <video id="input_video5"></video>
                     </div>
                 </article>
                 </div>
@@ -252,7 +262,7 @@ export default function Training() {
                     Mediapipe Pose Detection
                     </p>
                     <div className="panel-block">
-                    <canvas className="output5" width="480px" height="480px"></canvas>
+                      <canvas id="output5" width="720px" height="720px"></canvas>
                     </div>
                 </article>
                 </div>
@@ -261,8 +271,7 @@ export default function Training() {
             <div className="loading">
                 <div className="spinner"></div>
             </div>
-            <div style={{visibility: "hidden"}} className="control5">
-            </div>
+            <div style={{visibility: "hidden"}} id="control5"></div>
         </main>
 
         {/* <script type="text/javascript" src="./pose_est.js"></script> */}
