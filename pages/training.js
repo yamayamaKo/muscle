@@ -1,6 +1,10 @@
 import styles from '../styles/Home.module.css'
+import character from '../Assets/img/thin.png'
 import React from "react"
-import { hydrate, render } from "react-dom"
+import { useEffect } from 'react';
+
+import Image from 'next/image'
+// import { hydrate, render } from "react-dom"
 // import BrowserRouter from "./routers/Browser"
 
 // import '@mediapipe/pose';
@@ -12,15 +16,15 @@ import { hydrate, render } from "react-dom"
 // import '@mediapipe/pose';
 // import * as poseDetection from '@tensorflow-models/pose-detection';
 
-export default function Training() {
-    if (process.browser) {
-        // const detector = poseDetection.createDetector(poseDetection.SupportedModels.BlazePose, {runtime: 'mediapipe'});
+// var count = 0;
 
+export default function Training() {
+  useEffect(()=>{
+    if (process.browser) {
         const video5 = document.getElementById('input_video5');
         const out5 = document.getElementById('output5')
         const controlsElement5 = document.getElementById('control5');
         const canvasCtx5 = out5.getContext('2d');
-        // const pose = detector.estimatePoses(video5)
         
         console.log(video5);
         const fpsControl = new FPS();
@@ -35,6 +39,7 @@ export default function Training() {
         spinner.ontransitionend = () => {
           spinner.style.display = 'none';
         };
+    
         
         function zColor(data) {
           const z = clamp(data.from.z + 0.5, 0, 1);
@@ -96,7 +101,6 @@ export default function Training() {
           now = now.getTime();
           var dt = (now/1000).toFixed(2) - (prev/1000).toFixed(2);
           // console.log(dt);
-          // setInterval(log(now.getTime()), 1000);
         
           if(angle < thresh){
             console.log('BEND!');
@@ -220,7 +224,7 @@ export default function Training() {
               video5.classList.toggle('selfie', options.selfieMode);
               pose.setOptions(options);
             });
-    }
+    }},[])
   return (
     <div className={styles.container}>
       <head>
@@ -250,7 +254,8 @@ export default function Training() {
                     Webcam Input
                     </p>
                     <div className="panel-block">
-                      <video id="input_video5"></video>
+                      <video hidden id="input_video5" ></video>
+                      <canvas id="output5" width="720px" height="720px"></canvas>
                     </div>
                 </article>
                 </div>
@@ -262,7 +267,8 @@ export default function Training() {
                     Mediapipe Pose Detection
                     </p>
                     <div className="panel-block">
-                      <canvas id="output5" width="720px" height="720px"></canvas>
+                      <Image src={character} alt="Your character" title="Your character(Thin)"></Image>
+                      <canvas id="character" width="720px" height="720px"></canvas>
                     </div>
                 </article>
                 </div>
@@ -271,6 +277,7 @@ export default function Training() {
             <div className="loading">
                 <div className="spinner"></div>
             </div>
+            {/* <div id="control5"></div> */}
             <div style={{visibility: "hidden"}} id="control5"></div>
         </main>
 
