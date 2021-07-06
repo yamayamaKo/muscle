@@ -15,6 +15,7 @@
     "@mediapipe/pose": "^0.4.1624666670",
     "@tensorflow-models/pose-detection": "^0.0.3",
     "@tensorflow/tfjs-backend-webgl": "^3.7.0",
+    "antd": "^4.16.6",
     "next": "11.0.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
