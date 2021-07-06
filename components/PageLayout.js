@@ -9,7 +9,7 @@ const { Header, Content, Footer } = Layout;
 export default function PageLayout(props) {
     const navItems = ['マイページ','トレーニング','スケジュール']
     const navAddresses = ['/', '/trainingIndex', '/schedule']
-    console.log(props)
+
     return(
     <Layout className="layout">
         <Header>
