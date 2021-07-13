@@ -22,7 +22,7 @@ export default function MyCards() {
             onClick={() =>{
               router.push({
                 pathname:"/training",
-                query: {mode: "pushup", cnt: 10}
+                query: {mode: "pushups", cnt: 10}
               })
             }}
           >         
@@ -35,6 +35,12 @@ export default function MyCards() {
             bordered={true} 
             hoverable={true}
             cover = {<img src={'/images/Squat.jpeg'} alt="Squart"/>}
+            onClick={() =>{
+              router.push({
+                pathname:"/training",
+                query: {mode: "squat", cnt: 10}
+              })
+            }}
           >
           </Card>
         </Col>
@@ -45,6 +51,12 @@ export default function MyCards() {
             bordered={true} 
             hoverable={true}
             cover = {<img src={'/images/Crunchy.jpeg'} alt="Crunchy"/>}
+            onClick={() =>{
+              router.push({
+                pathname:"/training",
+                query: {mode: "situps", cnt: 10}
+              })
+            }}
           >
           </Card>
         </Col>
