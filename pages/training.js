@@ -5,9 +5,33 @@ import { useEffect } from 'react';
 import Link from 'next/link'
 
 import Image from 'next/image'
+import { Router } from 'next/dist/client/router';
 
 var goal = 10;
 var count = 0;
+var isStarted = false;
+
+
+
+// const StartButton = React.forwardRef(({ onClick}, ref) => {
+//     return (
+//       <a onClick={onClick} ref={ref}>
+//         Start
+//       </a>
+//       <script>
+//         console.log('started');
+//       </script>
+//     )
+// })
+
+const BackButton = React.forwardRef(({ onClick, href }, ref) => {
+  return (
+    <a href={href} onClick={onClick} ref={ref}>
+      Back
+    </a>
+  )
+})
+
 
 export default function Training() {
   useEffect(()=>{
@@ -43,10 +67,10 @@ export default function Training() {
           var angle = Math.abs(rad_to_deg(Math.atan2(p3.y-p2.y, p3.x-p2.x) - Math.atan2(p1.y-p2.y, p1.x-p2.x)));
           return Math.round(angle)
         }
-        
+
         function onResultsPose(results) {
           console.log(count)
-          // if(count <= goal){
+          if(count <= goal){
             document.body.classList.add('loaded');
             fpsControl.tick();
             var mode = 'pushups';
@@ -165,14 +189,12 @@ export default function Training() {
               canvasCtx.strokeText(dt, out.width-100, 50);
           
             canvasCtx.restore();
-            // }
-            // else{
-            //   console.log('You did it!')
-            //   count = 0;
-            //   return (
-            //     <Link href="/"></Link>
-            //   ) 
-            // }
+            }
+            else{
+              console.log('You did it!')
+              count = 0;
+              Router.push('/result') 
+            }
         }
         
         const pose = new Pose({locateFile: (file) => {
@@ -223,9 +245,9 @@ export default function Training() {
               pose.setOptions(options);
             });
         }
-      },[])
+    },[])
   return (
-    <div className={styles.container}>
+    <div>
       <head>
         <title>筋肉</title>
         <meta charSet="utf-8"/>
@@ -250,14 +272,23 @@ export default function Training() {
                 <div className="column">
                 <article className="panel is-info">
                     <p className="panel-heading">
-                    Webcam Input
+                      Webcam Input
                     </p>
                     <div className="panel-block">
                       <video hidden id="webcam"></video>
                       <canvas id="output" width="720px" height="720px"></canvas>
                     </div>
                 </article>
+                <div className="panel-heading">                
+                    {/* <StartButton/> */}
                 </div>
+                <div className="panel-heading">
+                  <Link href="/trainingIndex" passHref>
+                    <BackButton/>
+                  </Link>
+                </div>
+                </div>
+                
 
                 {/* MEDIAPIPE OUTPUT */}
                 <div className="column">
@@ -267,7 +298,7 @@ export default function Training() {
                     </p>
                     <div className="panel-block">
                       <Image src={character} alt="Your character" title="Your character(Thin)"></Image>
-                      <canvas id="character" width="720px" height="720px"></canvas>
+                      <canvas id="character" width="480px" height="480px" style={{marginLeft: "20px"}}></canvas>
                     </div>
                 </article>
                 </div>
