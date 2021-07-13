@@ -1,11 +1,13 @@
 import styles from '../styles/Home.module.css'
-import character from '../Assets/imgs/thin.png'
+import character from '../Assets/img/thin.png'
 import React from "react"
 import { useEffect } from 'react';
 import Link from 'next/link'
 
 import Image from 'next/image'
-import { Router } from 'next/dist/client/router';
+import Router, { useRouter} from 'next/router'
+import { FPS } from '@mediapipe/control_utils';
+import PageLayout from '../components/PageLayout';
 
 var goal = 10;
 var count = 0;
@@ -34,6 +36,7 @@ const BackButton = React.forwardRef(({ onClick, href }, ref) => {
 
 
 export default function Training() {
+  const router = useRouter()
   useEffect(()=>{
     if (process.browser) {
         console.log(count);
@@ -247,71 +250,59 @@ export default function Training() {
         }
     },[])
   return (
-    <div>
-      <head>
-        <title>筋肉</title>
-        <meta charSet="utf-8"/>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css"/>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.1/camera_utils.js" crossOrigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.1/control_utils.js" crossOrigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.2/drawing_utils.js" crossOrigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.2/pose.js" crossOrigin="anonymous"></script>
-      </head>
-    
-        <main>
+    <PageLayout pageNum="2">
+      <div>
+          <main>
+              {/* CONTENTS  */}
+              <div className="container" style={{marginTop: "20px"}}/>
 
-            {/* BULMA NAVBAR */}
-            <nav className="navbar" role="navigation" aria-label="main navigation"/>
+              <div className="columns">
+                  
+                  {/* WEBCAM INPUT */}
+                  <div className="column">
+                  <article className="panel is-info">
+                      <p className="panel-heading">
+                        Webcam Input
+                      </p>
+                      <div className="panel-block">
+                        <video hidden id="webcam"></video>
+                        <canvas id="output" width="720px" height="720px"></canvas>
+                      </div>
+                  </article>
+                  <div className="panel-heading">                
+                      {/* <StartButton/> */}
+                  </div>
+                  <div className="panel-heading">
+                    <Link href="/trainingIndex" passHref>
+                      <BackButton/>
+                    </Link>
+                  </div>
+                  </div>
+                  
 
-            {/* CONTENTS  */}
-            <div className="container" style={{marginTop: "20px"}}/>
+                  {/* MEDIAPIPE OUTPUT */}
+                  <div className="column">
+                  <article className="panel is-info">
+                      <p className="panel-heading">
+                      Mediapipe Pose Detection
+                      </p>
+                      <div className="panel-block">
+                        <Image src={character} alt="Your character" title="Your character(Thin)"></Image>
+                        <canvas id="character" width="480px" height="480px" style={{marginLeft: "20px"}}></canvas>
+                      </div>
+                  </article>
+                  </div>
+              </div>
+              
+              <div className="loading">
+                  <div className="spinner"></div>
+              </div>
+              {/* <div id="control"></div> */}
+              <div style={{visibility: "hidden"}} id="control"></div>
+          </main>
 
-            <div className="columns">
-                
-                {/* WEBCAM INPUT */}
-                <div className="column">
-                <article className="panel is-info">
-                    <p className="panel-heading">
-                      Webcam Input
-                    </p>
-                    <div className="panel-block">
-                      <video hidden id="webcam"></video>
-                      <canvas id="output" width="720px" height="720px"></canvas>
-                    </div>
-                </article>
-                <div className="panel-heading">                
-                    {/* <StartButton/> */}
-                </div>
-                <div className="panel-heading">
-                  <Link href="/trainingIndex" passHref>
-                    <BackButton/>
-                  </Link>
-                </div>
-                </div>
-                
-
-                {/* MEDIAPIPE OUTPUT */}
-                <div className="column">
-                <article className="panel is-info">
-                    <p className="panel-heading">
-                    Mediapipe Pose Detection
-                    </p>
-                    <div className="panel-block">
-                      <Image src={character} alt="Your character" title="Your character(Thin)"></Image>
-                      <canvas id="character" width="480px" height="480px" style={{marginLeft: "20px"}}></canvas>
-                    </div>
-                </article>
-                </div>
-            </div>
-            
-            <div className="loading">
-                <div className="spinner"></div>
-            </div>
-            {/* <div id="control"></div> */}
-            <div style={{visibility: "hidden"}} id="control"></div>
-        </main>
-
-        {/* <script type="text/javascript" src="./pose_est.js"></script> */}
-    </div>
+          {/* <script type="text/javascript" src="./pose_est.js"></script> */}
+      </div>
+    </PageLayout>
   )
 }
