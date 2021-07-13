@@ -21,7 +21,7 @@ export default function Index() {
             <Line percent='10' strokeWidth='1' width='50%' strokeColor='blue'/>
             次のレベルまであとXXX
             <MuscleChart data={data}/>
-            <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">ツイートして共有する</a>
+            <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" className="twitter-share-button" data-show-count="false">ツイートして共有する</a>
         </PageLayout>
     )
 }
