@@ -9,11 +9,12 @@ const { Header, Content, Footer } = Layout;
 export default function PageLayout(props) {
     const navItems = ['マイページ','トレーニング','スケジュール']
     const navAddresses = ['/', '/trainingIndex', '/schedule']
-    console.log(props)
     return(
     <Layout className="layout">
         <Header>
-            <div className="logo" >Training logo!</div>
+            <Link href="/">
+                <a><div className="logo" >筋肉</div></a>
+            </Link>
             <Menu theme="dark" mode="horizontal" defaultSelectedKeys={[props.pageNum]}>
                 {new Array(3).fill(null).map((_, index) => {
                 const key = index + 1;
