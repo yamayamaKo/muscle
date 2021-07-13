@@ -12,7 +12,7 @@ import PageLayout from '../components/PageLayout';
 var goal = 10;
 var count = 0;
 var isStarted = false;
-
+var mode = 'pushups';
 
 
 // const StartButton = React.forwardRef(({ onClick}, ref) => {
@@ -39,6 +39,8 @@ export default function Training() {
   const router = useRouter()
   useEffect(()=>{
     if (process.browser) {
+        goal = router.query.cnt ? Number(router.query.cnt) : goal 
+        mode = router.query.mode ? router.query.mode : mode
         console.log(count);
         const webcam = document.getElementById('webcam');
         const out = document.getElementById('output');
@@ -76,7 +78,6 @@ export default function Training() {
           if(count <= goal){
             document.body.classList.add('loaded');
             fpsControl.tick();
-            var mode = 'pushups';
           
             switch (mode){
               case 'squat':
