@@ -279,7 +279,6 @@ export default function Training() {
             }
             else{
               console.log('You did it!')
-              count = 0;
               router.push({
                 pathname: "/resultNormal",
                 query: {mode: mode, cnt: count}
