@@ -4,12 +4,44 @@ import 'antd/dist/antd.css';
 import { Layout, Menu, Breadcrumb } from 'antd';
 import Link from 'next/link'
 import Head from 'next/head'
+import Lib from '../lib/library'
+import firebase from 'firebase';
+import { connect } from 'react-redux';
 
 const { Header, Content, Footer } = Layout;
 
-export default function PageLayout(props) {
+function PageLayout(props) {
     const navItems = ['マイページ','トレーニング','スケジュール']
     const navAddresses = ['/', '/trainingIndex', '/schedule']
+
+    const login = () => {
+        // Googleを利用した認証
+        let provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider)
+            .then((result) => {
+                props.dispatch({
+                    type:'UpdateUser',
+                    value:{
+                        login:true,
+                        user_name: result.user.displayName,
+                        email: Lib.encodeEmail(result.user.email),
+                    }
+                })
+            })
+    }
+
+    const logout = () => {
+        firebase.auth().signOut();
+        props.dispatch({
+            type:'UpdateUser',
+            value:{
+                login: false,
+                user_name: '',
+                email: '',
+            }
+        })
+    }
+
     return(
     <Layout className="layout">
         <Head>
@@ -36,6 +68,18 @@ export default function PageLayout(props) {
                     </Menu.Item>
                 )
                 })}
+                {props.login ? 
+                (
+                    <Menu.Item key={4} onClick={() => {logout()}}>
+                        ログアウト
+                    </Menu.Item>
+                )
+                :
+                (
+                    <Menu.Item key={4} onClick={() => {login()}}>
+                        ログイン
+                    </Menu.Item>
+                ) }
             </Menu>
         </Header>
         <Content style={{ padding: '0 50px' }}>
@@ -45,3 +89,5 @@ export default function PageLayout(props) {
     </Layout>
     )
 }
+
+export default connect((state) => state)(PageLayout)
