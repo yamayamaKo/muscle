@@ -12,7 +12,6 @@ import PageLayout from '../components/PageLayout';
 
 
 var goal = 10;
-var count = 0;
 var mode = 'squat';
 
 
@@ -27,10 +26,12 @@ const BackButton = React.forwardRef(({ onClick, href }, ref) => {
 
 export default function Training() {
   const router = useRouter()
+  
   useEffect(()=>{
     if (process.browser) {
         goal = router.query.cnt ? Number(router.query.cnt) : goal 
         mode = router.query.mode ? router.query.mode : mode
+        var count = 0;
         console.log(count);
         const webcam = document.getElementById('webcam');
         const out = document.getElementById('output');
@@ -50,74 +51,82 @@ export default function Training() {
 
         function drawing_stand() {
           var canvas = document.getElementById("character");
-          var cw = canvas.width;
-          var ch = canvas.height;
-          var context = canvas.getContext("2d");
-          context.clearRect(0, 0, cw, ch);
-          var img=document.getElementById("squat2");
-          console.log("stand", img)
-          context.drawImage(img, 0, 0, cw, ch);
-          console.log("stand: ", img.image)
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("squat2");
+            console.log("stand", img)
+            context.drawImage(img, 0, 0, cw, ch);
+            console.log("stand: ", img.image)
+          }
         }
 
         function drawing_squat() {
           var canvas = document.getElementById("character");
-          var cw = canvas.width;
-          var ch = canvas.height;
-          var context = canvas.getContext("2d");
-          context.clearRect(0, 0, cw, ch);
-          var img=document.getElementById("squat1");
-          console.log("stand", img)
-          context.drawImage(img, 0, 0, cw, ch);
-          console.log("squat: ", img.image)
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("squat1");
+            console.log("stand", img)
+            context.drawImage(img, 0, 0, cw, ch);
+            console.log("squat: ", img.image)
+          }
         }
     
         function drawing_faceup() {
           var canvas = document.getElementById("character");
-          var cw = canvas.width;
-          var ch = canvas.height;
-          var context = canvas.getContext("2d");
-          context.clearRect(0, 0, cw, ch);
-          var img=document.getElementById("situp1");
-          console.log("faceup", img)
-          context.drawImage(img, 0, 0, cw, ch);
-          
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("situp1");
+            console.log("faceup", img)
+            context.drawImage(img, 0, 0, cw, ch);
+          }
         }
 
         function drawing_situp() {
           var canvas = document.getElementById("character");
-          var cw = canvas.width;
-          var ch = canvas.height;
-          var context = canvas.getContext("2d");
-          context.clearRect(0, 0, cw, ch);
-          var img=document.getElementById("situp2");
-          console.log("situp", img)
-          context.drawImage(img, 0, 0, cw, ch);
-          
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("situp2");
+            console.log("situp", img)
+            context.drawImage(img, 0, 0, cw, ch);
+          }
         }
     
         function drawing_facedown() {
           var canvas = document.getElementById("character");
-          var cw = canvas.width;
-          var ch = canvas.height;
-          var context = canvas.getContext("2d");
-          context.clearRect(0, 0, cw, ch);
-          var img=document.getElementById("pushup2");
-          console.log("facedown", img)
-          context.drawImage(img, 0, 0, cw, ch);
-          
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("pushup2");
+            console.log("facedown", img)
+            context.drawImage(img, 0, 0, cw, ch);
+          }
         }
 
         function drawing_pushup() {
           var canvas = document.getElementById("character");
-          var cw = canvas.width;
-          var ch = canvas.height;
-          var context = canvas.getContext("2d");
-          context.clearRect(0, 0, cw, ch);
-          var img=document.getElementById("pushup1");
-          console.log("pushup", img)
-          context.drawImage(img, 0, 0, cw, ch);
-          
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("pushup1");
+            console.log("pushup", img)
+            context.drawImage(img, 0, 0, cw, ch);
+          }
         }
 
         function zColor(data) {
@@ -302,9 +311,11 @@ export default function Training() {
             }
             else{
               console.log('You did it!')
+              var tmp = count;
+              count = 0;
               router.push({
                 pathname: "/resultNormal",
-                query: {mode: mode, cnt: count}
+                query: {mode: mode, cnt: tmp}
               }
               ) 
             }
@@ -402,14 +413,15 @@ export default function Training() {
               </div>
 
               
-              <div className="loading" style={{visibility: "hidden"}}>
-                  <Image src="/images/squat1_small.png" width="720px" height="1080px" alt='squat1' id="squat1"></Image> 
-                  <Image src="/images/squat2_small.png" width="720px" height="1080px" alt='squat2' id="squat2"></Image>
-                  <Image src="/images/situp1.png" width="1080px" height="720px" alt='situp1' id="situp1"></Image> 
-                  <Image src="/images/situp2.png" width="1080px" height="720px" alt='situp2' id="situp2"></Image>
-                  <Image src="/images/pushup1.png" width="1080px" height="720px" alt='pushup1' id="pushup1"></Image> 
-                  <Image src="/images/pushup2.png" width="1080px" height="720px" alt='pushup2' id="pushup2"></Image>
-                  <div className="spinner"></div>
+              <div className="loading" >
+              {/* style={{visibility: "hidden"}}> */}
+                  <Image src="/images/squat1_small.png" width="480px" height="720px" alt='squat1' id="squat1"></Image> 
+                  <Image src="/images/squat2_small.png" width="480px" height="720px" alt='squat2' id="squat2"></Image>
+                  <Image src="/images/situp1_small.png" width="720px" height="480px" alt='situp1' id="situp1"></Image> 
+                  <Image src="/images/situp2_small.png" width="720px" height="480px" alt='situp2' id="situp2"></Image>
+                  <Image src="/images/pushup1_small.png" width="720px" height="480px" alt='pushup1' id="pushup1"></Image> 
+                  <Image src="/images/pushup2_small.png" width="720px" height="480px" alt='pushup2' id="pushup2"></Image>
+                <div className="spinner"></div>
               </div>
               {/* <div id="control"></div> */}
               <div style={{visibility: "hidden"}} id="control"></div>
