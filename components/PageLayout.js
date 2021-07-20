@@ -13,18 +13,36 @@ const { Header, Content, Footer } = Layout;
 function PageLayout(props) {
     const navItems = ['マイページ','トレーニング','スケジュール']
     const navAddresses = ['/', '/trainingIndex', '/schedule']
+    const defaultStatus = {abs: 0, arm: 0, back: 0, chest: 0, leg: 0, exp: 0}
 
     const login = () => {
         // Googleを利用した認証
         let provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider)
             .then((result) => {
-                props.dispatch({
-                    type:'UpdateUser',
-                    value:{
-                        login:true,
-                        user_name: result.user.displayName,
-                        email: Lib.encodeEmail(result.user.email),
+                const user_email = Lib.encodeEmail(result.user.email)
+                firebase.database().ref(Lib.encodeEmail(result.user.email)).on('value', (snapshot) => {
+                    if (snapshot.exists()){
+                        props.dispatch({
+                            type:'UpdateUser',
+                            value:{
+                                login:true,
+                                user_name: result.user.displayName,
+                                email: Lib.encodeEmail(result.user.email),
+                                user_status: snapshot.val()
+                            }
+                        })
+                    }else {
+                        firebase.database().ref(user_email).set(defaultStatus)
+                        props.dispatch({
+                            type:'UpdateUser',
+                            value:{
+                                login:true,
+                                user_name: result.user.displayName,
+                                email: Lib.encodeEmail(result.user.email),
+                                user_status: defaultStatus
+                            }                            
+                        })
                     }
                 })
             })
@@ -38,6 +56,7 @@ function PageLayout(props) {
                 login: false,
                 user_name: '',
                 email: '',
+                user_status: defaultStatus,
             }
         })
     }

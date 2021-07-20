@@ -22,6 +22,7 @@ const initial = {
   login: false,
   user_name: '',
   email: '',
+  user_status: {abs: 0, arm: 0, back: 0, chest: 0, leg: 0, exp: 0}
 }
 
 // レデューサー
@@ -32,6 +33,7 @@ function counterReducer (state = initial, action) {
             login: action.value.login,
             user_name: action.value.user_name,
             email: action.value.email,
+            user_status: action.value.user_status,
         }
     default:
       return state;
