@@ -1,19 +1,20 @@
 import styles from '../styles/Home.module.css'
-// import squat1 from '../Assets/img/squat/squat1.png'
-// import squat2 from '../Assets/img/squat/squat2.png'
+import img_squat1 from "../public/images/squat1_small.png"
+import img_squat2 from "../public/images/squat2_small.png"
 import React from "react"
 import { useEffect } from 'react';
 import Link from 'next/link'
 
-// import Image from 'next/image'
+import Image from 'next/image'
 import Router, { useRouter } from 'next/router'
 import { FPS } from '@mediapipe/control_utils';
 import PageLayout from '../components/PageLayout';
 
+
 var goal = 10;
 var count = 0;
 var isStarted = false;
-var mode = 'pushups';
+var mode = 'squat';
 
 
 // const StartButton = React.forwardRef(({ onClick}, ref) => {
@@ -46,20 +47,21 @@ export default function Training() {
         const webcam = document.getElementById('webcam');
         const out = document.getElementById('output');
         
-        const squat_img = new Image()
-        squat_img.src = '/images/squat1.png';
-        const stand_img = new Image()
-        stand_img.src = '/images/squat2.png';
+        // var squat_img = new Image()
+        // squat_img.src = '../images/squat1.png';
+        // var stand_img = new Image()
+        // stand_img.src = '../images/squat2.png';
 
-        console.log(typeof(stand_img));
+
+        // console.log('image typpe: ', typeof(stand_img.image));
 
         // const squat1 = new Image();
 
         // const character = document.getElementById('character');
         const controlsElement = document.getElementById('control');
         const canvasCtx = out.getContext('2d');
-        const canvas = document.getElementById('character');
-        const ctx = canvas.getContext("2d");
+        // const canvas = document.getElementById('character');
+        // const ctx = canvas.getContext("2d");
         // const canvasChara = character.getContext('2d');
 
         // const squat_img = new Image();
@@ -77,20 +79,70 @@ export default function Training() {
         spinner.ontransitionend = () => {
           spinner.style.display = 'none';
         };
+
+        function drawing_stand() {
+          var canvas = document.getElementById("character");
+          var cw = canvas.width;
+          var ch = canvas.height;
+          var context = canvas.getContext("2d");
+          context.clearRect(0, 0, cw, ch);
+        
+            // var img=new Image();
+            //                 img.src = "images/squat2.png";
+          var img=document.getElementById("squat2");
+          console.log("stand", img)
+          // function() {
+          context.drawImage(img, 0, 0);
+        
+            // var imageData = context.getImageData(0, 0, cw, cw);
+        
+          console.log("stand: ", img.image)
+        
+            // context.putImageData(imageData, 0, 0);
+          // }
+        }
+
+        function drawing_squat() {
+          var canvas = document.getElementById("character");
+          var cw = canvas.width;
+          var ch = canvas.height;
+          var context = canvas.getContext("2d");
+          context.clearRect(0, 0, cw, ch);
+        
+            // var img=new Image();
+
+            // img.src = "images/squat1.png";
+            var img=document.getElementById("squat1");
+            console.log("stand", img)
+            // img.onload = function() {
+                          context.drawImage(img, 0, 0);
+                          // var imageData = context.getImageData(0, 0, 480, 480);
+                          console.log("squat: ", img.image)
+        
+            // context.putImageData(imageData, 0, 0);
+          // }
+        }
     
-        function draw(img){
-          ctx.save();
-          ctx.clearRect(0, 0, ctx.width, ctx.height);
+        function draw(isSquat){
+          // ctx.save();
+          // ctx.clearRect(0, 0, ctx.width, ctx.height);
           ctx.font = 'bold 30pt sans-serif';
           ctx.strokeStyle = '#00ff00';
           ctx.lineWidth = 3;
           ctx.strokeText("Cannot detect your body", ctx.width/2, ctx.height/2);
-          // console.log(typeof(img));
+          var img = new Image();
+          if(isSquat){
+            img.src = "../public/images/squat1.png";
+          }
+          else{
+            img.src = "../public/images/squat2.png";
+          }
+          // console.log("draw ", typeof(img));
           img.onload = () => {
-            ctx.drawImage(img, 0, 0);
-            console.log('Drawed');
+            ctx.drawImage(img, 0, 0, ctx.width, ctx.height);
+            console.log('Drawed', isSquat);
          }
-         ctx.restore();
+        //  ctx.restore();
         }
 
         function zColor(data) {
@@ -178,8 +230,10 @@ export default function Training() {
               }
               if(mode == 'squat'){
                 console.log("bend");
-                // var img_src = "/images/squat1.png";
-                draw(squat_img);
+                // var img_src = "../images/squat1.png";
+                // var isSquat=true;
+                // draw(isSquat);
+                drawing_squat()
               }
             
             }
@@ -187,8 +241,10 @@ export default function Training() {
               prev = new Date();
               prev = prev.getTime();
               if(mode == 'squat'){
-                // var img_src = "/images/squat2.png";
-                draw(stand_img);
+                // var img_src = "../images/squat2.png";
+                // var isSquat=false;
+                // draw(isSquat);
+                drawing_stand()
               }
             }
             // canvasChara.restore();
@@ -344,18 +400,19 @@ export default function Training() {
                   <article className="panel is-info">
                       <p className="panel-heading">
                       Mediapipe Pose Detection
-                      </p>
-                      <div className="panel-block">
-                        {/* <image hidden src={squat1}  id="squat1"></image> 
-                        <image hidden src={squat2}  id="squat2"></image> */}
-                        
-                        <canvas id="character" width="480px" height="480px" style={{marginLeft: "20px"}}></canvas>
+                      </p>  
+                      <div className="panel-block">  
+                        <canvas id="character" width="720px" height="1080px" ></canvas>
                       </div>
                   </article>
                   </div>
+                  
               </div>
+
               
               <div className="loading">
+                  <Image  src="/images/squat1_small.png" width="720px" height="1080px" id="squat1"></Image> 
+                  <Image  src="/images/squat2_small.png" width="720px" height="1080px" id="squat2"></Image>
                   <div className="spinner"></div>
               </div>
               {/* <div id="control"></div> */}
