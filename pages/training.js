@@ -1,11 +1,12 @@
 import styles from '../styles/Home.module.css'
-import character from '../Assets/img/thin.png'
+// import squat1 from '../Assets/img/squat/squat1.png'
+// import squat2 from '../Assets/img/squat/squat2.png'
 import React from "react"
 import { useEffect } from 'react';
 import Link from 'next/link'
 
-import Image from 'next/image'
-import Router, { useRouter} from 'next/router'
+// import Image from 'next/image'
+import Router, { useRouter } from 'next/router'
 import { FPS } from '@mediapipe/control_utils';
 import PageLayout from '../components/PageLayout';
 
@@ -44,8 +45,28 @@ export default function Training() {
         console.log(count);
         const webcam = document.getElementById('webcam');
         const out = document.getElementById('output');
+        
+        const squat_img = new Image()
+        squat_img.src = '/images/squat1.png';
+        const stand_img = new Image()
+        stand_img.src = '/images/squat2.png';
+
+        console.log(typeof(stand_img));
+
+        // const squat1 = new Image();
+
+        // const character = document.getElementById('character');
         const controlsElement = document.getElementById('control');
         const canvasCtx = out.getContext('2d');
+        const canvas = document.getElementById('character');
+        const ctx = canvas.getContext("2d");
+        // const canvasChara = character.getContext('2d');
+
+        // const squat_img = new Image();
+        // squat_img.src = "../Asstes/img/squat/squat2.png";  // 画像のURLを指定
+        // squat_img.onload = () => {
+        //   canvasChara.drawImage(squat_img, 0, 0);
+        // };
         
         console.log(webcam);
         const fpsControl = new FPS();
@@ -57,7 +78,21 @@ export default function Training() {
           spinner.style.display = 'none';
         };
     
-        
+        function draw(img){
+          ctx.save();
+          ctx.clearRect(0, 0, ctx.width, ctx.height);
+          ctx.font = 'bold 30pt sans-serif';
+          ctx.strokeStyle = '#00ff00';
+          ctx.lineWidth = 3;
+          ctx.strokeText("Cannot detect your body", ctx.width/2, ctx.height/2);
+          // console.log(typeof(img));
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0);
+            console.log('Drawed');
+         }
+         ctx.restore();
+        }
+
         function zColor(data) {
           const z = clamp(data.from.z + 0.5, 0, 1);
           return `rgba(0, ${255 * z}, ${255 * (1 - z)}, 1)`;
@@ -84,8 +119,9 @@ export default function Training() {
                 var idx1 = 24
                 var idx2 = 26
                 var idx3 = 28
-                var thresh = 60
+                var thresh = 120
                 var interval = 0.3
+                
                 break
               case 'pushups':
                 var idx1 = 12
@@ -109,17 +145,29 @@ export default function Training() {
                 var idx3 = 12
                 var thresh = -190
                 var interval = 0.3
-                break        
+                break
             }
             
+
+            canvasCtx.save();
             // console.log(mode, idx1, idx2, idx3, thresh, results.poseLandmarks[0]);
-            var angle = calc_angle(results.poseLandmarks[idx1],results.poseLandmarks[idx2],results.poseLandmarks[idx3]);
+            if(results.poseLandmarks[idx1]!=null && results.poseLandmarks[idx2]!=null && results.poseLandmarks[idx3]!=null){
+              var angle = calc_angle(results.poseLandmarks[idx1],results.poseLandmarks[idx2],results.poseLandmarks[idx3]);
+            }
+            else{
+              var angle = 1000000;
+              canvasCtx.font = 'bold 30pt sans-serif';
+              canvasCtx.strokeStyle = '#00ff00';
+              canvasCtx.lineWidth = 3;
+              canvasCtx.strokeText("Cannot detect your body", out.width/2, out.height/2);
+            }
             // console.log(angle);
             var now = new Date();
             now = now.getTime();
             var dt = (now/1000).toFixed(2) - (prev/1000).toFixed(2);
             // console.log(dt);
-          
+            // Draw_bend();
+            // canvasChara.save();
             if(angle < thresh){
               // console.log('BEND!');
               if(dt > interval){
@@ -128,15 +176,25 @@ export default function Training() {
                 prev = new Date();
                 prev = prev.getTime();
               }
+              if(mode == 'squat'){
+                console.log("bend");
+                // var img_src = "/images/squat1.png";
+                draw(squat_img);
+              }
+            
             }
             else{
               prev = new Date();
               prev = prev.getTime();
+              if(mode == 'squat'){
+                // var img_src = "/images/squat2.png";
+                draw(stand_img);
+              }
             }
-            
+            // canvasChara.restore();
             // console.log(mode, angle, count);
 
-            canvasCtx.save();
+            
             canvasCtx.clearRect(0, 0, out.width, out.height);
             canvasCtx.drawImage(
                 results.image, 0, 0, out.width, out.height);
@@ -197,7 +255,7 @@ export default function Training() {
             else{
               console.log('You did it!')
               count = 0;
-              Router.push('/result') 
+              // Router.push('/resultNormal') 
             }
         }
         
@@ -288,7 +346,9 @@ export default function Training() {
                       Mediapipe Pose Detection
                       </p>
                       <div className="panel-block">
-                        <Image src={character} alt="Your character" title="Your character(Thin)"></Image>
+                        {/* <image hidden src={squat1}  id="squat1"></image> 
+                        <image hidden src={squat2}  id="squat2"></image> */}
+                        
                         <canvas id="character" width="480px" height="480px" style={{marginLeft: "20px"}}></canvas>
                       </div>
                   </article>
