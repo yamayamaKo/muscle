@@ -280,9 +280,10 @@ export default function Training() {
             else{
               console.log('You did it!')
               count = 0;
-              Router.push(
-                pathname:"/resultNormal",
+              router.push({
+                pathname: "/resultNormal",
                 query: {mode: mode, cnt: count}
+              }
               ) 
             }
         }
