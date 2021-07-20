@@ -96,6 +96,29 @@ export default function Training() {
           
         }
     
+        function drawing_facedown() {
+          var canvas = document.getElementById("character");
+          var cw = canvas.width;
+          var ch = canvas.height;
+          var context = canvas.getContext("2d");
+          context.clearRect(0, 0, cw, ch);
+          var img=document.getElementById("pushup2");
+          console.log("facedown", img)
+          context.drawImage(img, 0, 0, cw, ch);
+          
+        }
+
+        function drawing_pushup() {
+          var canvas = document.getElementById("character");
+          var cw = canvas.width;
+          var ch = canvas.height;
+          var context = canvas.getContext("2d");
+          context.clearRect(0, 0, cw, ch);
+          var img=document.getElementById("pushup1");
+          console.log("pushup", img)
+          context.drawImage(img, 0, 0, cw, ch);
+          
+        }
 
         function zColor(data) {
           const z = clamp(data.from.z + 0.5, 0, 1);
@@ -114,7 +137,7 @@ export default function Training() {
 
         function onResultsPose(results) {
           console.log(count)
-          if(count <= goal){
+          if(count < goal){
             document.body.classList.add('loaded');
             fpsControl.tick();
           
@@ -184,7 +207,7 @@ export default function Training() {
                   drawing_squat()
                   break
                 case 'pushups':
-                  
+                  drawing_pushup()
                   break
             
                 case 'situps':
@@ -204,7 +227,7 @@ export default function Training() {
                   drawing_stand()
                   break
                 case 'pushups':
-                  
+                  drawing_facedown()
                   break
             
                 case 'situps':
@@ -348,9 +371,9 @@ export default function Training() {
                       <p className="panel-heading">
                         Webcam Input
                       </p>
-                      <div className="panel-block" >
+                      <div className="panel-block" style={{layoutalign: "center"}}>
                         <video hidden id="webcam" ></video>
-                        <canvas id="output" width="720px" height="720px"></canvas>
+                        <canvas id="output" width="720px" height="720px" ></canvas>
                       </div>
                   </article>
                   <div className="panel-heading">                
@@ -371,7 +394,7 @@ export default function Training() {
                       Mediapipe Pose Detection
                       </p>  
                       <div className="panel-block">  
-                        <canvas id="character" width="980px" height="980px" ></canvas>
+                        <canvas id="character" width="980px" height="980px" layout="fill"></canvas>
                       </div>
                   </article>
                   </div>
@@ -379,11 +402,13 @@ export default function Training() {
               </div>
 
               
-              <div className="loading">
-                  <Image  src="/images/squat1_small.png" width="720px" height="1080px" id="squat1"></Image> 
-                  <Image  src="/images/squat2_small.png" width="720px" height="1080px" id="squat2"></Image>
-                  <Image  src="/images/situp1.png" width="1080px" height="720px" id="situp1"></Image> 
-                  <Image  src="/images/situp2.png" width="1080px" height="720px" id="situp2"></Image>
+              <div className="loading" style={{visibility: "hidden"}}>
+                  <Image src="/images/squat1_small.png" width="720px" height="1080px" alt='squat1' id="squat1"></Image> 
+                  <Image src="/images/squat2_small.png" width="720px" height="1080px" alt='squat2' id="squat2"></Image>
+                  <Image src="/images/situp1.png" width="1080px" height="720px" alt='situp1' id="situp1"></Image> 
+                  <Image src="/images/situp2.png" width="1080px" height="720px" alt='situp2' id="situp2"></Image>
+                  <Image src="/images/pushup1.png" width="1080px" height="720px" alt='pushup1' id="pushup1"></Image> 
+                  <Image src="/images/pushup2.png" width="1080px" height="720px" alt='pushup2' id="pushup2"></Image>
                   <div className="spinner"></div>
               </div>
               {/* <div id="control"></div> */}
