@@ -6,14 +6,12 @@ import { useEffect } from 'react';
 import Link from 'next/link'
 
 import Image from 'next/image'
-import Router, { useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { FPS } from '@mediapipe/control_utils';
 import PageLayout from '../components/PageLayout';
 
-
 var goal = 10;
 var mode = 'squat';
-
 
 const BackButton = React.forwardRef(({ onClick, href }, ref) => {
   return (
@@ -38,6 +36,7 @@ export default function Training() {
 
         const controlsElement = document.getElementById('control');
         const canvasCtx = out.getContext('2d');
+
         
         console.log(webcam);
         const fpsControl = new FPS();
@@ -110,7 +109,7 @@ export default function Training() {
             var ch = canvas.height;
             var context = canvas.getContext("2d");
             context.clearRect(0, 0, cw, ch);
-            var img=document.getElementById("pushup2");
+            var img=document.getElementById("pushup1");
             console.log("facedown", img)
             context.drawImage(img, 0, 0, cw, ch);
           }
@@ -123,11 +122,19 @@ export default function Training() {
             var ch = canvas.height;
             var context = canvas.getContext("2d");
             context.clearRect(0, 0, cw, ch);
-            var img=document.getElementById("pushup1");
+            var img=document.getElementById("pushup2");
             console.log("pushup", img)
             context.drawImage(img, 0, 0, cw, ch);
           }
         }
+
+        function wait(ms){
+          var start = new Date().getTime();
+          var end = start;
+          while(end < start + ms) {
+            end = new Date().getTime();
+         }
+       }
 
         function zColor(data) {
           const z = clamp(data.from.z + 0.5, 0, 1);
@@ -317,7 +324,8 @@ export default function Training() {
                 pathname: "/resultNormal",
                 query: {mode: mode, cnt: tmp}
               }
-              ) 
+              )
+              wait(1000); 
             }
         }
         
@@ -405,7 +413,7 @@ export default function Training() {
                       Mediapipe Pose Detection
                       </p>  
                       <div className="panel-block">  
-                        <canvas id="character" width="980px" height="980px" layout="fill"></canvas>
+                        <canvas id="character" width="720px" height="720px" layout="fill"></canvas>
                       </div>
                   </article>
                   </div>
@@ -413,14 +421,13 @@ export default function Training() {
               </div>
 
               
-              <div className="loading" >
-              {/* style={{visibility: "hidden"}}> */}
+              <div className="loading" style={{visibility: "hidden"}}>
                   <Image src="/images/squat1_small.png" width="480px" height="720px" alt='squat1' id="squat1"></Image> 
                   <Image src="/images/squat2_small.png" width="480px" height="720px" alt='squat2' id="squat2"></Image>
-                  <Image src="/images/situp1_small.png" width="720px" height="480px" alt='situp1' id="situp1"></Image> 
-                  <Image src="/images/situp2_small.png" width="720px" height="480px" alt='situp2' id="situp2"></Image>
-                  <Image src="/images/pushup1_small.png" width="720px" height="480px" alt='pushup1' id="pushup1"></Image> 
-                  <Image src="/images/pushup2_small.png" width="720px" height="480px" alt='pushup2' id="pushup2"></Image>
+                  <Image src="/images/situp1_small.png" width="480px" height="720px" alt='situp1' id="situp1"></Image> 
+                  <Image src="/images/situp2_small.png" width="480px" height="720px" alt='situp2' id="situp2"></Image>
+                  <Image src="/images/pushup1_small.png" width="480px" height="720px" alt='pushup1' id="pushup1"></Image> 
+                  <Image src="/images/pushup2_small.png" width="480px" height="720px" alt='pushup2' id="pushup2"></Image>
                 <div className="spinner"></div>
               </div>
               {/* <div id="control"></div> */}
