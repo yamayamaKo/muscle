@@ -1,30 +1,17 @@
-import styles from '../styles/Home.module.css'
-import character from '../Assets/img/thin.png'
+// import styles from '../styles/Home.module.css'
+// import img_squat1 from "../public/images/squat1_small.png"
+// import img_squat2 from "../public/images/squat2_small.png"
 import React from "react"
 import { useEffect } from 'react';
 import Link from 'next/link'
 
 import Image from 'next/image'
-import Router, { useRouter} from 'next/router'
+import { useRouter } from 'next/router'
 import { FPS } from '@mediapipe/control_utils';
 import PageLayout from '../components/PageLayout';
 
 var goal = 10;
-var count = 0;
-var isStarted = false;
-var mode = 'pushups';
-
-
-// const StartButton = React.forwardRef(({ onClick}, ref) => {
-//     return (
-//       <a onClick={onClick} ref={ref}>
-//         Start
-//       </a>
-//       <script>
-//         console.log('started');
-//       </script>
-//     )
-// })
+var mode = 'squat';
 
 const BackButton = React.forwardRef(({ onClick, href }, ref) => {
   return (
@@ -37,15 +24,19 @@ const BackButton = React.forwardRef(({ onClick, href }, ref) => {
 
 export default function Training() {
   const router = useRouter()
+  
   useEffect(()=>{
     if (process.browser) {
         goal = router.query.cnt ? Number(router.query.cnt) : goal 
         mode = router.query.mode ? router.query.mode : mode
+        var count = 0;
         console.log(count);
         const webcam = document.getElementById('webcam');
         const out = document.getElementById('output');
+
         const controlsElement = document.getElementById('control');
         const canvasCtx = out.getContext('2d');
+
         
         console.log(webcam);
         const fpsControl = new FPS();
@@ -56,8 +47,95 @@ export default function Training() {
         spinner.ontransitionend = () => {
           spinner.style.display = 'none';
         };
+
+        function drawing_stand() {
+          var canvas = document.getElementById("character");
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("squat2");
+            console.log("stand", img)
+            context.drawImage(img, 0, 0, cw, ch);
+            console.log("stand: ", img.image)
+          }
+        }
+
+        function drawing_squat() {
+          var canvas = document.getElementById("character");
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("squat1");
+            console.log("stand", img)
+            context.drawImage(img, 0, 0, cw, ch);
+            console.log("squat: ", img.image)
+          }
+        }
     
-        
+        function drawing_faceup() {
+          var canvas = document.getElementById("character");
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("situp1");
+            console.log("faceup", img)
+            context.drawImage(img, 0, 0, cw, ch);
+          }
+        }
+
+        function drawing_situp() {
+          var canvas = document.getElementById("character");
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("situp2");
+            console.log("situp", img)
+            context.drawImage(img, 0, 0, cw, ch);
+          }
+        }
+    
+        function drawing_facedown() {
+          var canvas = document.getElementById("character");
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("pushup1");
+            console.log("facedown", img)
+            context.drawImage(img, 0, 0, cw, ch);
+          }
+        }
+
+        function drawing_pushup() {
+          var canvas = document.getElementById("character");
+          if(canvas != null){
+            var cw = canvas.width;
+            var ch = canvas.height;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, cw, ch);
+            var img=document.getElementById("pushup2");
+            console.log("pushup", img)
+            context.drawImage(img, 0, 0, cw, ch);
+          }
+        }
+
+        function wait(ms){
+          var start = new Date().getTime();
+          var end = start;
+          while(end < start + ms) {
+            end = new Date().getTime();
+         }
+       }
+
         function zColor(data) {
           const z = clamp(data.from.z + 0.5, 0, 1);
           return `rgba(0, ${255 * z}, ${255 * (1 - z)}, 1)`;
@@ -75,7 +153,7 @@ export default function Training() {
 
         function onResultsPose(results) {
           console.log(count)
-          if(count <= goal){
+          if(count < goal){
             document.body.classList.add('loaded');
             fpsControl.tick();
           
@@ -84,8 +162,9 @@ export default function Training() {
                 var idx1 = 24
                 var idx2 = 26
                 var idx3 = 28
-                var thresh = 60
+                var thresh = 120
                 var interval = 0.3
+                
                 break
               case 'pushups':
                 var idx1 = 12
@@ -109,17 +188,27 @@ export default function Training() {
                 var idx3 = 12
                 var thresh = -190
                 var interval = 0.3
-                break        
+                break
             }
             
+
+            canvasCtx.save();
             // console.log(mode, idx1, idx2, idx3, thresh, results.poseLandmarks[0]);
-            var angle = calc_angle(results.poseLandmarks[idx1],results.poseLandmarks[idx2],results.poseLandmarks[idx3]);
+            if(results.poseLandmarks[idx1]!=null && results.poseLandmarks[idx2]!=null && results.poseLandmarks[idx3]!=null){
+              var angle = calc_angle(results.poseLandmarks[idx1],results.poseLandmarks[idx2],results.poseLandmarks[idx3]);
+            }
+            else{
+              var angle = 1000000;
+              canvasCtx.font = 'bold 30pt sans-serif';
+              canvasCtx.strokeStyle = '#00ff00';
+              canvasCtx.lineWidth = 3;
+              canvasCtx.strokeText("Cannot detect your body", out.width/2, out.height/2);
+            }
             // console.log(angle);
             var now = new Date();
             now = now.getTime();
             var dt = (now/1000).toFixed(2) - (prev/1000).toFixed(2);
-            // console.log(dt);
-          
+
             if(angle < thresh){
               // console.log('BEND!');
               if(dt > interval){
@@ -128,15 +217,48 @@ export default function Training() {
                 prev = new Date();
                 prev = prev.getTime();
               }
+              console.log("bend");
+              switch (mode){
+                case 'squat':
+                  drawing_squat()
+                  break
+                case 'pushups':
+                  drawing_pushup()
+                  break
+            
+                case 'situps':
+                  drawing_situp()
+                  break
+            
+                case 'backexts':
+                  
+                  break
+              }
             }
             else{
               prev = new Date();
               prev = prev.getTime();
-            }
+              switch (mode){
+                case 'squat':
+                  drawing_stand()
+                  break
+                case 'pushups':
+                  drawing_facedown()
+                  break
             
+                case 'situps':
+                  drawing_faceup()
+                  break
+            
+                case 'backexts':
+                  
+                  break
+              }
+            }
+            // canvasChara.restore();
             // console.log(mode, angle, count);
 
-            canvasCtx.save();
+            
             canvasCtx.clearRect(0, 0, out.width, out.height);
             canvasCtx.drawImage(
                 results.image, 0, 0, out.width, out.height);
@@ -196,15 +318,18 @@ export default function Training() {
             }
             else{
               console.log('You did it!')
+              var tmp = count;
               count = 0;
-              Router.push('/result') 
+              router.push({
+                pathname: "/resultNormal",
+                query: {mode: mode, cnt: tmp}
+              }
+              )
+              wait(1000); 
             }
         }
         
         const pose = new Pose({locateFile: (file) => {
-          // console.log('a')
-          // console.log(typeof file)
-          // console.log(file)
           return `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.2/${file}`;
         },});
         pose.onResults(onResultsPose);
@@ -265,9 +390,9 @@ export default function Training() {
                       <p className="panel-heading">
                         Webcam Input
                       </p>
-                      <div className="panel-block">
-                        <video hidden id="webcam"></video>
-                        <canvas id="output" width="720px" height="720px"></canvas>
+                      <div className="panel-block" style={{layoutalign: "center"}}>
+                        <video hidden id="webcam" ></video>
+                        <canvas id="output" width="720px" height="720px" ></canvas>
                       </div>
                   </article>
                   <div className="panel-heading">                
@@ -286,17 +411,24 @@ export default function Training() {
                   <article className="panel is-info">
                       <p className="panel-heading">
                       Mediapipe Pose Detection
-                      </p>
-                      <div className="panel-block">
-                        <Image src={character} alt="Your character" title="Your character(Thin)"></Image>
-                        <canvas id="character" width="480px" height="480px" style={{marginLeft: "20px"}}></canvas>
+                      </p>  
+                      <div className="panel-block">  
+                        <canvas id="character" width="720px" height="720px" layout="fill"></canvas>
                       </div>
                   </article>
                   </div>
+                  
               </div>
+
               
-              <div className="loading">
-                  <div className="spinner"></div>
+              <div className="loading" style={{visibility: "hidden"}}>
+                  <Image src="/images/squat1_small.png" width="480px" height="720px" alt='squat1' id="squat1"></Image> 
+                  <Image src="/images/squat2_small.png" width="480px" height="720px" alt='squat2' id="squat2"></Image>
+                  <Image src="/images/situp1_small.png" width="480px" height="720px" alt='situp1' id="situp1"></Image> 
+                  <Image src="/images/situp2_small.png" width="480px" height="720px" alt='situp2' id="situp2"></Image>
+                  <Image src="/images/pushup1_small.png" width="480px" height="720px" alt='pushup1' id="pushup1"></Image> 
+                  <Image src="/images/pushup2_small.png" width="480px" height="720px" alt='pushup2' id="pushup2"></Image>
+                <div className="spinner"></div>
               </div>
               {/* <div id="control"></div> */}
               <div style={{visibility: "hidden"}} id="control"></div>
